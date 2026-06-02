@@ -68,7 +68,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>🌿 Emilia — Tracker Nutricional</title>
+        <title>Tracker Nutricional</title>
       </Head>
 
       <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
@@ -86,7 +86,7 @@ export default function Home() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '22px' }}>🌿</span>
               <span style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em' }}>
-                Emilia
+                Jere
               </span>
             </div>
 

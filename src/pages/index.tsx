@@ -60,10 +60,11 @@ export default function Home() {
   const isToday = date === format(new Date(), 'yyyy-MM-dd')
 
   const dailyContext = {
-    ...totals,
-    trained: summary?.trained || false,
-    steps: summary?.steps || 0,
-  }
+  ...totals,
+  trained: summary?.trained || false,
+  steps: summary?.steps || 0,
+  logs: logs,   // ← agregar esta línea
+}
 
   return (
     <>

@@ -12,6 +12,7 @@ import ActivityPanel from '@/components/ActivityPanel'
 import Recommendations from '@/components/Recommendations'
 import ChatPanel from '@/components/ChatPanel'
 import SummaryView from '@/components/SummaryView'
+import DayAnalysis from '@/components/DayAnalysis'
 
 type Tab = 'hoy' | 'resumen' | 'chat'
 
@@ -218,6 +219,11 @@ export default function Home() {
               ) : (
                 <FoodLogList logs={logs} onDeleted={loadData} />
               )}
+
+              {/* Análisis del día */}
+              <div style={{ marginTop: '16px' }}>
+                <DayAnalysis logs={logs} totals={totals} summary={summary} />
+              </div>
             </div>
           )}
 

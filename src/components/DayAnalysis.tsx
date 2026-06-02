@@ -90,24 +90,23 @@ export default function DayAnalysis({ logs, totals, summary }: DayAnalysisProps)
         <div className="fade-in" style={{
           fontSize: '14px', lineHeight: 1.75,
           color: 'var(--text-mid)',
-          whiteSpace: 'pre-wrap',
         }}>
-          {/* Render markdown-style bold */}
           {analysis.split('\n').map((line, i) => {
-            // Section headers with **
             if (line.startsWith('**') && line.endsWith('**')) {
               return (
                 <div key={i} style={{
-                  fontWeight: 700, color: 'var(--text-dark)',
-                  fontSize: '13px', textTransform: 'uppercase',
-                  letterSpacing: '0.05em', marginTop: i > 0 ? '16px' : 0,
-                  marginBottom: '4px', color: 'var(--green-dark)'
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  textTransform: 'uppercase' as const,
+                  letterSpacing: '0.05em',
+                  marginTop: i > 0 ? '16px' : 0,
+                  marginBottom: '4px',
+                  color: 'var(--green-dark)',
                 }}>
                   {line.replace(/\*\*/g, '')}
                 </div>
               )
             }
-            // Lines with inline bold
             if (line.includes('**')) {
               const parts = line.split(/\*\*/)
               return (
@@ -120,9 +119,7 @@ export default function DayAnalysis({ logs, totals, summary }: DayAnalysisProps)
                 </p>
               )
             }
-            // Empty line
             if (line.trim() === '') return <div key={i} style={{ height: '6px' }} />
-            // Normal line
             return <p key={i} style={{ margin: '3px 0' }}>{line}</p>
           })}
         </div>

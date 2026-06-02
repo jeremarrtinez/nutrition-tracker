@@ -16,7 +16,7 @@ export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: '¡Hola Emilia! 🌿 Soy tu asistente nutricional. Podés preguntarme sobre recetas, consultar tus macros, pedirme que analice si podés comer algo, ¡lo que quieras!'
+      content: '¡Hola Jere! 🌿 Soy tu asistente nutricional. Podés preguntarme sobre recetas, consultar tus macros, pedirme que analice si podés comer algo, ¡lo que quieras!'
     }
   ])
   const [input, setInput] = useState('')
@@ -44,7 +44,7 @@ export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: newMessages,
-          dailyContext,
+          dailyContext: dailyContext ? { ...dailyContext } : null,
         }),
       })
       const data = await res.json()

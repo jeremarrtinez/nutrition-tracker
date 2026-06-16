@@ -169,6 +169,30 @@ export default function SummaryView() {
   const avgCal  = daysWithData.length > 0 ? totals.calories / daysWithData.length : 0
   const avgProt = daysWithData.length > 0 ? totals.protein  / daysWithData.length : 0
 
+  // Macro filter toggles
+  const [showCal,  setShowCal]  = useState(true)
+  const [showProt, setShowProt] = useState(true)
+  const [showCarb, setShowCarb] = useState(true)
+  const [showFat,  setShowFat]  = useState(true)
+
+  const MacroToggle = ({ label, active, color, bg, onClick }: {
+    label: string; active: boolean; color: string; bg: string; onClick: () => void
+  }) => (
+    <button onClick={onClick} style={{
+      padding: '5px 12px', borderRadius: 20, border: `1.5px solid ${active ? color : 'var(--green-pale)'}`,
+      background: active ? bg : 'white', color: active ? color : 'var(--text-light)',
+      fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
+      transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 5,
+    }}>
+      <span style={{
+        width: 8, height: 8, borderRadius: '50%',
+        background: active ? color : 'var(--green-pale)',
+        display: 'inline-block', flexShrink: 0,
+      }} />
+      {label}
+    </button>
+  )
+
   const StatCard = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color: string }) => (
     <div className="card" style={{ padding: '14px', textAlign: 'center', flex: 1, minWidth: 110 }}>
       <div style={{ fontSize: '10px', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>{label}</div>
@@ -367,24 +391,44 @@ export default function SummaryView() {
             </ResponsiveContainer>
           </div>
 
-          {/* Macros chart */}
+          {/* Macros chart with filters */}
           <div className="card" style={{ padding: '20px', marginBottom: 16 }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, margin: '0 0 14px', color: 'var(--text-dark)' }}>
-              Macronutrientes {view === 'semanas' ? '(promedio por semana)' : 'por día'}
-            </h3>
-            <ResponsiveContainer width="100%" height={210}>
-              <BarChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--green-pale)" />
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip contentStyle={{ fontFamily: 'var(--font-body)', fontSize: 13, borderRadius: 8 }}
-                  formatter={(v: number, n: string) => [`${v.toFixed(1)}g`, n]} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="protein" name="Proteínas" fill="#1d6fa8" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="carbs"   name="Carbos"    fill="#f59e0b" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="fat"     name="Grasas"    fill="var(--green-sage)" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, margin: 0, color: 'var(--text-dark)' }}>
+                Macronutrientes {view === 'semanas' ? '(promedio/semana)' : 'por día'}
+              </h3>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <MacroToggle label="Calorías" active={showCal}  color="var(--terracotta)" bg="#fee2e2" onClick={() => setShowCal(p => !p)} />
+                <MacroToggle label="Proteínas" active={showProt} color="#1d6fa8"           bg="#dbeafe" onClick={() => setShowProt(p => !p)} />
+                <MacroToggle label="Carbos"    active={showCarb} color="#b07d1a"           bg="#fef9c3" onClick={() => setShowCarb(p => !p)} />
+                <MacroToggle label="Grasas"    active={showFat}  color="var(--green-sage)" bg="#d1fae5" onClick={() => setShowFat(p => !p)} />
+              </div>
+            </div>
+
+            {!showCal && !showProt && !showCarb && !showFat ? (
+              <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-light)', fontSize: 13 }}>
+                Seleccioná al menos un macro para ver el gráfico
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={210}>
+                <BarChart data={chartData} margin={{ top: 16, right: 4, left: -20, bottom: 4 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--green-pale)" />
+                  <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip
+                    contentStyle={{ fontFamily: 'var(--font-body)', fontSize: 13, borderRadius: 8 }}
+                    formatter={(v: number, n: string) => [
+                      n === 'Calorías' ? `${Math.round(v)} kcal` : `${v.toFixed(1)}g`, n
+                    ]}
+                  />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  {showCal  && <Bar dataKey="calories" name="Calorías"  fill="var(--terracotta)" radius={[2,2,0,0]} label={{ position: 'top', fontSize: 9, formatter: (v: number) => v > 0 ? Math.round(v) : '' }} />}
+                  {showProt && <Bar dataKey="protein"  name="Proteínas" fill="#1d6fa8"            radius={[2,2,0,0]} label={{ position: 'top', fontSize: 9, formatter: (v: number) => v > 0 ? `${v.toFixed(0)}g` : '' }} />}
+                  {showCarb && <Bar dataKey="carbs"    name="Carbos"    fill="#f59e0b"            radius={[2,2,0,0]} label={{ position: 'top', fontSize: 9, formatter: (v: number) => v > 0 ? `${v.toFixed(0)}g` : '' }} />}
+                  {showFat  && <Bar dataKey="fat"      name="Grasas"    fill="var(--green-sage)"  radius={[2,2,0,0]} label={{ position: 'top', fontSize: 9, formatter: (v: number) => v > 0 ? `${v.toFixed(0)}g` : '' }} />}
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
           {/* Table */}

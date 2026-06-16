@@ -72,13 +72,32 @@ Devolvé SOLO este JSON sin markdown ni texto extra:
       }),
     })
 
+    if (!response.ok) {
+      const errBody = await response.text()
+      console.error('Anthropic API error:', response.status, errBody)
+      return res.status(500).json({ error: `Anthropic error ${response.status}: ${errBody}` })
+    }
+
     const data = await response.json()
     const text = data.content?.[0]?.text || ''
+
+    if (!text) {
+      console.error('Empty response from Anthropic:', JSON.stringify(data))
+      return res.status(500).json({ error: 'Respuesta vacía de la IA' })
+    }
+
     const clean = text.replace(/```json|```/g, '').trim()
-    const parsed = JSON.parse(clean)
+
+    let parsed
+    try {
+      parsed = JSON.parse(clean)
+    } catch {
+      console.error('JSON parse error. Raw text:', text)
+      return res.status(500).json({ error: 'La IA no devolvió JSON válido', raw: text })
+    }
+
     res.json(parsed)
   } catch (err) {
-    console.error('Error analyzing food:', err)
-    res.status(500).json({ error: 'Error al analizar la comida' })
+    console.error('Fetch error:', err)
+    res.status(500).json({ error: String(err) })
   }
-}

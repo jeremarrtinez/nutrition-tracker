@@ -32,18 +32,18 @@ VALORES DE REFERENCIA que debés respetar:
 - 1 porción queso port salut light (30g): 75 kcal, 7g prot, 0.5g carb, 5g grasa
 - 2 fetas jamón cocido (30g): 45 kcal, 7g prot, 1g carb, 1.5g grasa
 - 1 cda aceite (10ml): 90 kcal, 0g prot, 0g carb, 10g grasa
-- 1/2 palta mediana (70g): 115 kcal, 1g prot, 6g carb, 10g grasa
+- 1/2 palta mediana (70g): 115 kcal, 1g prot, 3g carb, 10g grasa
 - 150g arroz cocido: 195 kcal, 4g prot, 43g carb, 0.5g grasa
 - 150g fideos cocidos: 220 kcal, 7g prot, 44g carb, 1g grasa
 - 1 papa mediana hervida (150g): 130 kcal, 3g prot, 30g carb, 0g grasa
-- 1 fruta mediana (manzana/naranja/banana): 70-90 kcal, 1g prot, 20g carb, 0g grasa
+- 1 fruta mediana (manzana/naranja/banana): 80 kcal, 1g prot, 20g carb, 0g grasa
 - 150g yogur descremado: 85 kcal, 9g prot, 12g carb, 0g grasa
-- 4 cdas granola (40g): 180 kcal, 4g prot, 28g carb, 6g grasa
-- 25g frutos secos (nueces/almendras): 150 kcal, 4g prot, 4g carb, 14g grasa
+- 4 cdas granola (40g): 170 kcal, 4g prot, 28g carb, 6g grasa
+- 25g frutos secos (nueces/almendras): 155 kcal, 4g prot, 4g carb, 14g grasa
 - 1 cda mantequilla maní (15g): 90 kcal, 3.5g prot, 3g carb, 8g grasa
 - 100g lenteja/garbanzo cocido: 115 kcal, 9g prot, 20g carb, 0.5g grasa
 - Pan integral (1 rebanada 30g): 75 kcal, 3g prot, 14g carb, 1g grasa
-- 1 taza avena (80g): 300 kcal, 11g prot, 54g carb, 5g grasa
+- 1 taza avena (80g): 290 kcal, 11g prot, 54g carb, 5g grasa
 
 Si la comida tiene ingredientes combinados, sumá cada componente por separado y luego dá el total.
 
@@ -55,7 +55,7 @@ Devolvé SOLO este JSON sin markdown ni texto extra:
   "carbs": número con 1 decimal,
   "fat": número con 1 decimal,
   "breakdown": "detalle de cómo calculaste (ej: 2 huevos: 140 kcal + 1 tostada: 65 kcal = 205 kcal total)"
-}
+}`
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -66,7 +66,7 @@ Devolvé SOLO este JSON sin markdown ni texto extra:
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 600,
         messages: [{ role: 'user', content: prompt }],
       }),
@@ -101,3 +101,4 @@ Devolvé SOLO este JSON sin markdown ni texto extra:
     console.error('Fetch error:', err)
     res.status(500).json({ error: String(err) })
   }
+}

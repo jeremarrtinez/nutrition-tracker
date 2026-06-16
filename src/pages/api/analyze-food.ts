@@ -55,7 +55,7 @@ Devolvé SOLO este JSON sin markdown ni texto extra:
   "carbs": número con 1 decimal,
   "fat": número con 1 decimal,
   "breakdown": "detalle de cómo calculaste (ej: 2 huevos: 140 kcal + 1 tostada: 65 kcal = 205 kcal total)"
-}`
+}
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {

@@ -43,8 +43,8 @@ export default function Home() {
     fat: acc.fat + l.fat,
   }), { calories: 0, protein: 0, carbs: 0, fat: 0 })
 
-  const activityBonus = (summary?.trained ? ACTIVITY_CALORIES.training : 0)
-    + Math.max(0, ((summary?.steps || 0) - ACTIVITY_CALORIES.stepsBase) * ACTIVITY_CALORIES.caloriesPerStep)
+  const activityBonus = 0
+  const effectiveCalTarget = DAILY_PLAN.calories
 
   const effectiveCalTarget = DAILY_PLAN.calories + activityBonus
 

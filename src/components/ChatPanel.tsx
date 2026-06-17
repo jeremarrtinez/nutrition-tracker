@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { supabase, DailySummary } from '@/lib/supabase'
-import { format } from 'date-fns'
+import { supabase } from '@/lib/supabase'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -9,7 +8,15 @@ interface Message {
 
 interface ChatPanelProps {
   date: string
-  dailyContext: { calories: number; protein: number; carbs: number; fat: number; trained: boolean; steps: number } | null
+  dailyContext: {
+    calories: number
+    protein: number
+    carbs: number
+    fat: number
+    trained: boolean
+    steps: number
+    logs?: { meal_type: string; description: string; calories: number; protein: number; carbs: number; fat: number }[]
+  } | null
 }
 
 export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
@@ -21,6 +28,7 @@ export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -29,30 +37,44 @@ export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
 
   async function send() {
     if (!input.trim() || loading) return
+
     const userMsg: Message = { role: 'user', content: input.trim() }
     const newMessages = [...messages, userMsg]
     setMessages(newMessages)
     setInput('')
     setLoading(true)
-
-    // Save to DB
-    await supabase.from('chat_history').insert({ date, role: 'user', content: userMsg.content })
+    setError('')
 
     try {
+      await supabase.from('chat_history').insert({
+        date, role: 'user', content: userMsg.content
+      })
+
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: newMessages,
-          dailyContext: dailyContext ? { ...dailyContext } : null,
+          dailyContext,
         }),
       })
+
       const data = await res.json()
-      const aiMsg: Message = { role: 'assistant', content: data.reply || 'No pude responder.' }
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || `Error ${res.status}`)
+      }
+
+      const aiMsg: Message = { role: 'assistant', content: data.reply }
       setMessages(prev => [...prev, aiMsg])
-      await supabase.from('chat_history').insert({ date, role: 'assistant', content: aiMsg.content })
-    } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Hubo un error. Intentá de nuevo.' }])
+
+      await supabase.from('chat_history').insert({
+        date, role: 'assistant', content: aiMsg.content
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error desconocido'
+      setError(msg)
+      setMessages(prev => prev.filter((_, i) => i < prev.length))
     } finally {
       setLoading(false)
     }
@@ -64,37 +86,35 @@ export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
       <div style={{
         padding: '16px 20px',
         borderBottom: '1px solid var(--green-pale)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
+        display: 'flex', alignItems: 'center', gap: 10,
       }}>
         <div style={{
           width: 36, height: 36, borderRadius: '50%',
           background: 'var(--green-dark)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '18px',
+          fontSize: 18,
         }}>🌿</div>
         <div>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '15px', color: 'var(--text-dark)' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 15, color: 'var(--text-dark)' }}>
             Asistente Nutricional
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--green-sage)' }}>
-            Recetas, macros, consultas, lo que quieras
+          <div style={{ fontSize: 11, color: 'var(--green-sage)' }}>
+            {dailyContext?.logs && dailyContext.logs.length > 0
+              ? `${dailyContext.logs.length} comidas registradas hoy`
+              : 'Sin comidas registradas hoy'}
           </div>
         </div>
       </div>
 
       {/* Messages */}
       <div style={{
-        flex: 1, overflowY: 'auto',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
+        flex: 1, overflowY: 'auto', padding: 16,
+        display: 'flex', flexDirection: 'column', gap: 12,
       }}>
         {messages.map((m, i) => (
           <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
-            <div className={m.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'} style={{ whiteSpace: 'pre-wrap' }}>
+            <div className={m.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}
+              style={{ whiteSpace: 'pre-wrap' }}>
               {m.content}
             </div>
           </div>
@@ -107,6 +127,16 @@ export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
             </div>
           </div>
         )}
+
+        {error && (
+          <div style={{
+            padding: '8px 12px', background: '#fee2e2', borderRadius: 8,
+            fontSize: 12, color: '#dc2626', textAlign: 'center',
+          }}>
+            ⚠️ {error} — intentá de nuevo
+          </div>
+        )}
+
         <div ref={bottomRef} />
       </div>
 
@@ -114,8 +144,7 @@ export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
       <div style={{
         padding: '12px 16px',
         borderTop: '1px solid var(--green-pale)',
-        display: 'flex',
-        gap: '8px',
+        display: 'flex', gap: 8,
       }}>
         <input
           className="input-field"
@@ -131,7 +160,7 @@ export default function ChatPanel({ date, dailyContext }: ChatPanelProps) {
           disabled={loading || !input.trim()}
           style={{ minWidth: 70 }}
         >
-          ↑
+          {loading ? '...' : '↑'}
         </button>
       </div>
     </div>

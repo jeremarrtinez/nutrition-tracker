@@ -6,7 +6,7 @@
 // Macros diarios estimados basados en el plan real
 // (el plan es por porciones, no por calorías exactas — estos son valores aproximados)
 export const DAILY_PLAN = {
-  calories: 2200,   // estimado según las porciones del plan
+  calories: 2000,   // estimado según las porciones del plan
   protein: 160,     // g — basado en 300g carne/pollo + huevos + lácteos + jamón
   carbs: 220,       // g — 3 tostadas + 1/3 plato hidrato en almuerzo y cena + 2 frutas
   fat: 65,          // g — 2 cdas aceite + queso + huevos (grasas naturales de los alimentos)
@@ -15,9 +15,9 @@ export const DAILY_PLAN = {
 
 // Distribución por comida
 export const MEAL_DISTRIBUTION = {
-  desayuno: { calories: 0.25, label: 'Desayuno',  emoji: '🌅', time: '7:00 - 9:00' },
-  almuerzo: { calories: 0.35, label: 'Almuerzo',  emoji: '☀️',  time: '12:00 - 14:00' },
-  merienda: { calories: 0.15, label: 'Merienda',  emoji: '🍎',  time: '16:00 - 17:00' },
+  desayuno: { calories: 0.25, label: 'Desayuno',  emoji: '🌅', time: '7:00 - 10:00' },
+  almuerzo: { calories: 0.35, label: 'Almuerzo',  emoji: '☀️',  time: '12:00 - 15:00' },
+  merienda: { calories: 0.15, label: 'Merienda',  emoji: '🍎',  time: '16:00 - 18:00' },
   cena:     { calories: 0.20, label: 'Cena',      emoji: '🌙',  time: '19:00 - 21:00' },
   snack:    { calories: 0.05, label: 'Snack',     emoji: '🥜',  time: 'Cualquier momento' },
 }
@@ -38,9 +38,9 @@ export const FOOD_LIMITS = {
 
 // Calorías extras por actividad física
 export const ACTIVITY_CALORIES = {
-  training:     350,    // calorías extra si entrenó
-  stepsBase:    3000,   // pasos base sin beneficio
-  caloriesPerStep: 0.04,
+  training:     0,    // calorías extra si entrenó
+  stepsBase:    0,   // pasos base sin beneficio
+  caloriesPerStep: 0,
 }
 
 // ============================================================

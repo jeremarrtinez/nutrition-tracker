@@ -9,9 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return res.status(500).json({ error: 'API key no configurada' })
 
-  // Construir el resumen real del día con los logs exactos
   const logsDetalle = dailyContext?.logs && dailyContext.logs.length > 0
-    ? dailyContext.logs.map((l: { meal_type: string; description: string; calories: number; protein: number; carbs: number; fat: number }) =>
+    ? dailyContext.logs.map((l: {
+        meal_type: string; description: string
+        calories: number; protein: number; carbs: number; fat: number
+      }) =>
         `  • [${l.meal_type}] ${l.description} → ${Math.round(l.calories)} kcal | P: ${l.protein.toFixed(1)}g | C: ${l.carbs.toFixed(1)}g | G: ${l.fat.toFixed(1)}g`
       ).join('\n')
     : '  (ninguna comida registrada aún hoy)'
@@ -19,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const systemPrompt = `${PLAN_CONTEXT}
 
 ════════════════════════════════════════
-LO QUE JERE COMIÓ HOY (DATOS REALES DE LA APP)
+LO QUE JERE COMIÓ HOY (DATOS REALES)
 ════════════════════════════════════════
 ${logsDetalle}
 
@@ -31,11 +33,10 @@ TOTALES DEL DÍA:
 - Entrenó hoy: ${dailyContext?.trained ? 'Sí' : 'No'}
 - Pasos: ${dailyContext?.steps || 0}
 
-INSTRUCCIÓN CRÍTICA: 
+INSTRUCCIÓN CRÍTICA:
 Solo podés hacer referencia a comidas que aparezcan EXACTAMENTE en la lista de arriba.
-Si no hay datos de alguna comida, decí que no está registrada.
-NUNCA inventes ni asumas comidas que no estén en esa lista.
-Si te preguntan qué comió hoy, respondé SOLO con lo que aparece arriba.`
+Si no hay datos, decí que no hay nada registrado aún.
+NUNCA inventes comidas que no estén en esa lista.`
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -46,8 +47,8 @@ Si te preguntan qué comió hoy, respondé SOLO con lo que aparece arriba.`
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6 ',
-        max_tokens: 1000,
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
         system: systemPrompt,
         messages: messages.map((m: { role: string; content: string }) => ({
           role: m.role,
@@ -56,11 +57,29 @@ Si te preguntan qué comió hoy, respondé SOLO con lo que aparece arriba.`
       }),
     })
 
+    if (!response.ok) {
+      const errBody = await response.text()
+      console.error('Anthropic error:', response.status, errBody)
+      return res.status(500).json({ error: `Error ${response.status}: ${errBody}` })
+    }
+
     const data = await response.json()
-    const text = data.content?.[0]?.text || 'No pude generar una respuesta.'
+
+    if (data.error) {
+      console.error('Anthropic API returned error:', data.error)
+      return res.status(500).json({ error: data.error.message || 'Error de la API' })
+    }
+
+    const text = data.content?.[0]?.text
+
+    if (!text) {
+      console.error('No text in response:', JSON.stringify(data))
+      return res.status(500).json({ error: 'Respuesta vacía' })
+    }
+
     res.json({ reply: text })
   } catch (err) {
-    console.error('Chat error:', err)
-    res.status(500).json({ error: 'Error en el chat' })
+    console.error('Chat fetch error:', err)
+    res.status(500).json({ error: String(err) })
   }
 }

@@ -46,8 +46,6 @@ export default function Home() {
   const activityBonus = 0
   const effectiveCalTarget = DAILY_PLAN.calories
 
-  const effectiveCalTarget = DAILY_PLAN.calories + activityBonus
-
   const pctCalories = totals.calories / effectiveCalTarget
 
   const dateLabel = format(parseISO(date + 'T12:00:00'), "EEEE d 'de' MMMM", { locale: es })

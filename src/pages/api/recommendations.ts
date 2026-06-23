@@ -85,7 +85,7 @@ Sé conciso, práctico y amigable. Organizalo de forma legible.`
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude--4-6',
         max_tokens: 900,
         messages: [{ role: 'user', content: prompt }],
       }),

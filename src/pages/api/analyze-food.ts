@@ -20,7 +20,7 @@ REGLAS ESTRICTAS:
 - Si no hay cantidad, asumí una porción estándar habitual en Argentina
 - NO sobreestimes ni subestimes — sé preciso
 
-VALORES DE REFERENCIA que debés respetar:
+VALORES DE REFERENCIA:
 - 1 huevo grande: 70 kcal, 6g prot, 0.5g carb, 5g grasa
 - 100g pechuga de pollo a la plancha: 165 kcal, 31g prot, 0g carb, 3.6g grasa
 - 100g carne vacuna magra: 180 kcal, 26g prot, 0g carb, 8g grasa
@@ -29,10 +29,10 @@ VALORES DE REFERENCIA que debés respetar:
 - 1 taza leche descremada (250ml): 85 kcal, 8g prot, 12g carb, 0.5g grasa
 - Café solo (sin azúcar): 5 kcal, 0g prot, 0g carb, 0g grasa
 - Café con leche (200ml leche): 120 kcal, 7g prot, 10g carb, 6g grasa
-- 1 porción queso port salut light (30g): 75 kcal, 7g prot, 0.5g carb, 5g grasa
+- 1 porción queso port salut light (30g): 80 kcal, 7g prot, 0.5g carb, 5.5g grasa
 - 2 fetas jamón cocido (30g): 45 kcal, 7g prot, 1g carb, 1.5g grasa
 - 1 cda aceite (10ml): 90 kcal, 0g prot, 0g carb, 10g grasa
-- 1/2 palta mediana (70g): 115 kcal, 1g prot, 3g carb, 10g grasa
+- 1/2 palta mediana (70g): 112 kcal, 1g prot, 3g carb, 10g grasa
 - 150g arroz cocido: 195 kcal, 4g prot, 43g carb, 0.5g grasa
 - 150g fideos cocidos: 220 kcal, 7g prot, 44g carb, 1g grasa
 - 1 papa mediana hervida (150g): 130 kcal, 3g prot, 30g carb, 0g grasa
@@ -42,7 +42,7 @@ VALORES DE REFERENCIA que debés respetar:
 - 25g frutos secos (nueces/almendras): 155 kcal, 4g prot, 4g carb, 14g grasa
 - 1 cda mantequilla maní (15g): 90 kcal, 3.5g prot, 3g carb, 8g grasa
 - 100g lenteja/garbanzo cocido: 115 kcal, 9g prot, 20g carb, 0.5g grasa
-- Pan integral (1 rebanada 30g): 75 kcal, 3g prot, 14g carb, 1g grasa
+- Pan integral 1 rebanada (30g): 75 kcal, 3g prot, 14g carb, 1g grasa
 - 1 taza avena (80g): 290 kcal, 11g prot, 54g carb, 5g grasa
 
 Si la comida tiene ingredientes combinados, sumá cada componente por separado y luego dá el total.
@@ -54,7 +54,7 @@ Devolvé SOLO este JSON sin markdown ni texto extra:
   "protein": número con 1 decimal,
   "carbs": número con 1 decimal,
   "fat": número con 1 decimal,
-  "breakdown": "detalle de cómo calculaste (ej: 2 huevos: 140 kcal + 1 tostada: 65 kcal = 205 kcal total)"
+  "breakdown": "detalle de cómo calculaste"
 }`
 
   try {
@@ -79,10 +79,10 @@ Devolvé SOLO este JSON sin markdown ni texto extra:
     }
 
     const data = await response.json()
-    const text = data.content?.[0]?.text || ''
+    const text = data.content?.[0]?.text
 
     if (!text) {
-      console.error('Empty response from Anthropic:', JSON.stringify(data))
+      console.error('Empty response:', JSON.stringify(data))
       return res.status(500).json({ error: 'Respuesta vacía de la IA' })
     }
 
@@ -92,7 +92,7 @@ Devolvé SOLO este JSON sin markdown ni texto extra:
     try {
       parsed = JSON.parse(clean)
     } catch {
-      console.error('JSON parse error. Raw text:', text)
+      console.error('JSON parse error. Raw:', text)
       return res.status(500).json({ error: 'La IA no devolvió JSON válido', raw: text })
     }
 

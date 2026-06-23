@@ -71,7 +71,7 @@ Tono: amigable, honesto, sin juzgar. Usá español rioplatense. Sé específico 
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude--4-6',
         max_tokens: 1000,
         messages: [{ role: 'user', content: prompt }],
       }),

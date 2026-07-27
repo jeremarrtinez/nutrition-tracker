@@ -29,7 +29,7 @@ export const QUICK_MEALS: QuickMeal[] = [
     id: 'sandwich-jamon-queso',
     name: 'Sandwich jamón y queso',
     emoji: '🥪',
-    meal_type: 'almuerzo',
+    meal_type: 'desayuno',
     calories: 265,
     protein: 20,
     carbs: 28,

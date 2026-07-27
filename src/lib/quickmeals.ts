@@ -26,6 +26,17 @@ export const QUICK_MEALS: QuickMeal[] = [
     description: '1 scoop proteína en agua',
   },
   {
+    id: 'sandwich-jamon-queso',
+    name: 'Sandwich jamón y queso',
+    emoji: '🥪',
+    meal_type: 'almuerzo',
+    calories: 265,
+    protein: 20,
+    carbs: 28,
+    fat: 8,
+    description: '2 rebanadas pan integral + 2 fetas jamón cocido + 1 porción queso port salut light',
+  },
+  {
     id: 'granola-yogur',
     name: 'Granola + yogur',
     emoji: '🥣',

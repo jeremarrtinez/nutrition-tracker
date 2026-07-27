@@ -13,6 +13,7 @@ import Recommendations from '@/components/Recommendations'
 import ChatPanel from '@/components/ChatPanel'
 import SummaryView from '@/components/SummaryView'
 import DayAnalysis from '@/components/DayAnalysis'
+import QuickMealButtons from '@/components/QuickMealButtons'
 
 type Tab = 'hoy' | 'resumen' | 'chat'
 
@@ -206,6 +207,10 @@ export default function Home() {
 
               {/* Food input */}
               <div style={{ marginBottom: '16px' }}>
+                {/* Acceso rápido */}
+<div style={{ marginBottom: '16px' }}>
+  <QuickMealButtons date={date} onAdded={loadData} />
+</div>
                 <FoodLogForm date={date} onAdded={loadData} />
               </div>
 
